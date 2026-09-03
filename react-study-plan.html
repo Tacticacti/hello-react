@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>React in 18 Weeks — Edward's Study Plan</title>
+<style>
+  :root{
+    --bg:#0b0f171a; --bg0:#080b11; --bg1:#0f141d; --bg2:#151c28; --bg3:#1d2634;
+    --line:#243044; --line2:#2f3d54;
+    --tx:#e6edf7; --tx2:#9fb0c9; --tx3:#6b7d97;
+    --cy:#61dafb; --cy2:#38bdf8;
+    --vi:#a78bfa; --gr:#4ade80; --am:#fbbf24; --rd:#fb7185;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 500px at 12% -8%, #12324a 0%, transparent 60%),
+      radial-gradient(800px 480px at 92% 4%, #2a1b47 0%, transparent 58%),
+      var(--bg0);
+    color:var(--tx);
+    font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  a{color:var(--cy);text-decoration:none;border-bottom:1px solid rgba(97,218,251,.25)}
+  a:hover{border-bottom-color:var(--cy)}
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 20px 100px}
+  code{background:var(--bg2);border:1px solid var(--line);padding:1px 6px;border-radius:6px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#cfe6ff}
+
+  /* ---------- header ---------- */
+  header.top{display:flex;gap:26px;align-items:center;flex-wrap:wrap;
+    background:linear-gradient(160deg,rgba(97,218,251,.07),rgba(167,139,250,.05));
+    border:1px solid var(--line);border-radius:20px;padding:22px 26px;margin-bottom:22px}
+  .ring{position:relative;flex:0 0 auto;width:132px;height:132px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+  .ring .pct b{display:block;font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .ring .pct span{font-size:10.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.4px}
+  .hmeta{flex:1 1 320px;min-width:280px}
+  h1{margin:0 0 4px;font-size:25px;letter-spacing:-.6px}
+  .sub{color:var(--tx2);font-size:13.5px;margin-bottom:14px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap}
+  .stat{background:var(--bg1);border:1px solid var(--line);border-radius:11px;padding:8px 13px;min-width:88px}
+  .stat b{display:block;font-size:18px;font-weight:750;line-height:1.25}
+  .stat span{font-size:10.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.9px}
+
+  /* ---------- focus banner ---------- */
+  .focus{display:flex;gap:14px;align-items:center;background:var(--bg1);
+    border:1px solid var(--line);border-left:3px solid var(--cy);
+    border-radius:var(--r);padding:14px 18px;margin-bottom:22px}
+  .focus .lbl{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--cy);font-weight:700}
+  .focus .txt{font-size:14.5px}
+  .focus .txt b{color:var(--tx)}
+
+  /* ---------- toolbar ---------- */
+  .bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+  button,.btn{font:inherit;font-size:13px;cursor:pointer;background:var(--bg2);color:var(--tx2);
+    border:1px solid var(--line2);border-radius:9px;padding:7px 13px;transition:.15s}
+  button:hover,.btn:hover{background:var(--bg3);color:var(--tx);border-color:#3d4d68}
+  button.on{background:rgba(97,218,251,.13);border-color:var(--cy);color:var(--cy)}
+  button.danger:hover{border-color:var(--rd);color:var(--rd)}
+  .bar .sp{flex:1}
+  input[type=date]{font:inherit;font-size:13px;background:var(--bg2);color:var(--tx2);
+    border:1px solid var(--line2);border-radius:9px;padding:6px 11px;color-scheme:dark}
+
+  /* ---------- project rail ---------- */
+  .rail{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:11px;margin-bottom:26px}
+  .pcard{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);padding:14px;
+    position:relative;overflow:hidden;transition:.2s;cursor:pointer}
+  .pcard:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .pcard .n{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tx3);font-weight:700}
+  .pcard h3{margin:5px 0 2px;font-size:16.5px;letter-spacing:-.3px}
+  .pcard .tag{font-size:12px;color:var(--tx2);min-height:32px}
+  .pcard .wk{font-size:11px;color:var(--tx3);margin-top:7px}
+  .pbar{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:9px}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cy),var(--vi));
+    border-radius:99px;transition:width .45s cubic-bezier(.3,1.2,.5,1)}
+  .pcard.done{border-color:rgba(74,222,128,.45);background:linear-gradient(160deg,rgba(74,222,128,.08),var(--bg1))}
+  .pcard.done .n{color:var(--gr)}
+  .pcard.active{border-color:rgba(97,218,251,.5);box-shadow:0 0 0 1px rgba(97,218,251,.14)}
+  .pcard .chk{position:absolute;top:11px;right:12px;font-size:16px;opacity:0;transition:.3s}
+  .pcard.done .chk{opacity:1}
+
+  /* ---------- section headings ---------- */
+  h2.sec{font-size:12px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);
+    margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line);font-weight:700}
+
+  /* ---------- week cards ---------- */
+  .week{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;overflow:hidden;transition:.2s}
+  .week.done{border-color:rgba(74,222,128,.34)}
+  .week.hide{display:none}
+  .whead{display:flex;gap:13px;align-items:center;padding:14px 17px;cursor:pointer;user-select:none}
+  .whead:hover{background:rgba(255,255,255,.022)}
+  .wnum{flex:0 0 auto;width:42px;height:42px;border-radius:11px;background:var(--bg3);
+    display:grid;place-content:center;font-weight:750;font-size:14px;color:var(--tx2);border:1px solid var(--line2);transition:.25s}
+  .week.done .wnum{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.42);color:var(--gr)}
+  .wtitle{flex:1;min-width:0}
+  .wtitle b{display:block;font-size:15px;font-weight:640;letter-spacing:-.2px}
+  .wtitle span{font-size:12px;color:var(--tx3)}
+  .wcount{font-size:12px;color:var(--tx3);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .caret{color:var(--tx3);transition:.25s;font-size:12px}
+  .week.open .caret{transform:rotate(90deg)}
+  .wbody{display:none;padding:2px 17px 17px 72px;border-top:1px solid var(--line)}
+  .week.open .wbody{display:block}
+
+  .grp{margin-top:15px}
+  .grp>.gt{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tx3);font-weight:700;margin-bottom:7px}
+  .grp.read>.gt{color:var(--cy2)}
+  .grp.build>.gt{color:var(--vi)}
+  .grp.brk>.gt{color:var(--am)}
+
+  .item{display:flex;gap:10px;align-items:flex-start;padding:5px 8px 5px 6px;border-radius:8px;transition:.12s}
+  .item:hover{background:rgba(255,255,255,.028)}
+  .item input{appearance:none;flex:0 0 auto;width:17px;height:17px;margin:3px 0 0;border-radius:5px;
+    border:1.5px solid var(--line2);background:var(--bg2);cursor:pointer;position:relative;transition:.16s}
+  .item input:hover{border-color:var(--cy)}
+  .item input:checked{background:var(--gr);border-color:var(--gr)}
+  .item input:checked::after{content:"";position:absolute;left:5px;top:1.5px;width:4px;height:9px;
+    border:solid #08120a;border-width:0 2px 2px 0;transform:rotate(42deg)}
+  .item label{cursor:pointer;font-size:13.8px;color:var(--tx);flex:1}
+  .item input:checked+label{color:var(--tx3);text-decoration:line-through;text-decoration-color:var(--line2)}
+  .item.milestone label{color:var(--am);font-weight:600}
+  .item.milestone input:checked+label{color:var(--tx3)}
+
+  .note{margin-top:14px;font-size:13px;border-radius:10px;padding:10px 13px;line-height:1.62}
+  .note.done{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.24)}
+  .note.warn{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.22)}
+  .note b{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;display:block;margin-bottom:3px}
+  .note.done b{color:var(--gr)} .note.warn b{color:var(--am)}
+  .note.done, .note.warn{color:var(--tx2)}
+
+  /* ---------- project detail ---------- */
+  .pdetail{background:linear-gradient(160deg,rgba(167,139,250,.07),var(--bg1));
+    border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-bottom:12px}
+  .pdetail h3{margin:0 0 3px;font-size:19px;letter-spacing:-.4px}
+  .pdetail .role{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--vi);font-weight:700;margin-bottom:11px}
+  .pdetail p{margin:0 0 10px;font-size:13.6px;color:var(--tx2)}
+  .pdetail p b{color:var(--tx)}
+  .crit{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+
+  /* ---------- reference ---------- */
+  .ref{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+  .ref>summary{padding:13px 17px;cursor:pointer;font-weight:640;font-size:14.5px;list-style:none;display:flex;gap:9px;align-items:center}
+  .ref>summary::-webkit-details-marker{display:none}
+  .ref>summary::before{content:"▸";color:var(--tx3);font-size:12px;transition:.2s}
+  .ref[open]>summary::before{transform:rotate(90deg)}
+  .ref>summary:hover{background:rgba(255,255,255,.022)}
+  .refbody{padding:2px 20px 18px;border-top:1px solid var(--line);font-size:13.6px;color:var(--tx2)}
+  .refbody p{margin:11px 0}
+  .refbody b{color:var(--tx)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--tx3);font-size:10.5px;letter-spacing:1.1px;text-transform:uppercase}
+
+  canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:99}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,140%);
+    background:var(--bg3);border:1px solid var(--gr);color:var(--tx);padding:13px 22px;
+    border-radius:12px;font-size:14px;z-index:100;transition:transform .45s cubic-bezier(.2,1.3,.4,1);
+    box-shadow:0 12px 40px rgba(0,0,0,.5);max-width:90vw;text-align:center}
+  .toast.show{transform:translate(-50%,0)}
+  footer{margin-top:40px;text-align:center;color:var(--tx3);font-size:12px}
+  @media(max-width:640px){
+    .wbody{padding-left:17px}
+    .ring{width:104px;height:104px}
+    .wrap{padding:18px 13px 80px}
+  }
+</style>
+</head>
+<body>
+<canvas id="cf"></canvas>
+<div class="toast" id="toast"></div>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="ring">
+      <svg width="132" height="132" viewBox="0 0 132 132">
+        <circle cx="66" cy="66" r="56" fill="none" stroke="#1d2634" stroke-width="11"/>
+        <circle id="arc" cx="66" cy="66" r="56" fill="none" stroke="url(#g)" stroke-width="11"
+                stroke-linecap="round" stroke-dasharray="351.86" stroke-dashoffset="351.86"
+                style="transition:stroke-dashoffset .7s cubic-bezier(.3,1.1,.4,1)"/>
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#61dafb"/><stop offset="100%" stop-color="#a78bfa"/>
+        </linearGradient></defs>
+      </svg>
+      <div class="pct"><b id="pctN">0%</b><span>complete</span></div>
+    </div>
+    <div class="hmeta">
+      <h1>React in 18 Weeks</h1>
+      <div class="sub">5 escalating projects · 5–8 hrs/week · learn by doing, break things on purpose</div>
+      <div class="stats">
+        <div class="stat"><b id="sTasks">0/0</b><span>Tasks</span></div>
+        <div class="stat"><b id="sWeeks">0/18</b><span>Weeks</span></div>
+        <div class="stat"><b id="sProj">0/5</b><span>Projects</span></div>
+        <div class="stat"><b id="sEta">—</b><span>Finish by</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="focus">
+    <div>
+      <div class="lbl">Current focus</div>
+      <div class="txt" id="focusTxt">Start with Week 1 — the JavaScript warm-up.</div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <button id="bHide">Hide finished weeks</button>
+    <button id="bOpen">Expand all</button>
+    <button id="bClose">Collapse all</button>
+    <span class="sp"></span>
+    <label style="font-size:12px;color:var(--tx3)">Started&nbsp;</label>
+    <input type="date" id="startDate">
+    <button id="bExport">Export</button>
+    <button id="bImport">Import</button>
+    <button id="bReset" class="danger">Reset</button>
+  </div>
+
+  <div class="rail" id="rail"></div>
+
+  <div id="plan"></div>
+
+  <h2 class="sec">Reference</h2>
+  <div id="refs"></div>
+
+  <footer>
+    Progress saves automatically in this browser. Use <b>Export</b> to back it up.<br>
+    Verified against React 19.2 / React Router 8.3 docs, August 2026.
+  </footer>
+</div>
+
+<script>
+"use strict";
+/* ============================== DATA ============================== */
+const L = (t,u)=>({t,u});
+
+const PROJECTS = [
+  { id:"p1", n:1, name:"Stack", tag:"static dashboard", role:"Foundation", weeks:[2,3,4],
+    what:"A static dashboard of things you're reading, watching or building. ~12 items from one hardcoded array, grouped by status, badges driven by the data, a computed summary line, and an empty state. No buttons. Nothing changes after load.",
+    why:"That constraint is deliberate — it forces you to solve <b>only</b> the decomposition problem, which is the one beginners skip and then pay for forever.",
+    learn:"Splitting a page into components. Props. Composition via <code>children</code>. Lists with stable keys. Conditional rendering. Deriving values instead of storing them. Purity.",
+    crit:["<b>It works:</b> adding a 13th object updates the list, the right group, its badge and the summary — and you changed nothing else.",
+          "<b>You understand it:</b> given a screenshot of any website, you can sketch its component tree and say which props flow where, in under five minutes.",
+          "<b>Retrieval:</b> rebuild the <code>Card</code>/<code>ProfileCard</code> composition from an empty file, no reference, under 20 minutes."] },
+
+  { id:"p2", n:2, name:"Tally", tag:"task manager", role:"New concepts: state", weeks:[5,6,7],
+    what:"A task manager: add, toggle, edit in place, delete, filter, clear completed, count remaining. Then — once it fully works — rebuild the state layer with <code>useReducer</code> and confirm the behaviour is identical.",
+    why:"Weeks 5 and 6 (Score Keeper, Signup Form) are warm-ups that feed straight in. Writing the same app twice, two ways, is what gives you a felt sense of when a reducer is worth it.",
+    learn:"<code>useState</code>. Events. Why state is a snapshot. Controlled inputs and validation. Immutable array and object updates. Lifting state up. <code>useReducer</code>.",
+    crit:["<b>It works:</b> every operation works, editing in place doesn't lose your cursor, and the reducer version is behaviourally identical.",
+          "<b>You understand it:</b> you can explain out loud, using your own +3 button, why three <code>setScore(score + 1)</code> calls only add 1 — without saying \"because it's asynchronous\" as if that were an explanation.",
+          "<b>Retrieval:</b> from an empty file, write add / toggle / remove / update over an array of objects, no mutation, correct on the first run."] },
+
+  { id:"p3", n:3, name:"Pokédex", tag:"API client", role:"Real-world application", weeks:[8,9,10],
+    what:"A searchable, paginated Pokédex against pokeapi.co. Detail pages. Search term in the URL so <code>/?q=pika</code> is shareable and the back button works. All four data states handled: loading, error, empty, success.",
+    why:"The first project where you don't control the data. The API returns what it returns, at the speed it returns it, and sometimes it fails. That shift — from data you invented to data you receive — is what makes it real-world.",
+    learn:"<code>useEffect</code> and cleanup. Custom hooks. Async data with all its states. Debouncing. Race conditions. Routing, nested layouts, and the URL as state you don't have to manage.",
+    crit:["<b>It works:</b> four states render sensibly, the race condition is fixed and you can demonstrate it was there, every view has a URL, back/forward behaves.",
+          "<b>You understand it:</b> you can point at a place in your own code where you nearly reached for <code>useEffect</code> and didn't need to, and say what you did instead.",
+          "<b>Retrieval:</b> from an empty file, write a <code>useFetch</code> hook including cleanup and error handling, under 30 minutes."] },
+
+  { id:"p4", n:4, name:"Shelf", tag:"client-side CRUD", role:"The challenge", weeks:[11,12,13,14],
+    what:"A book library manager in TypeScript. Four routes. Full CRUD. State in a reducer delivered through Context. Persisted to localStorage. Filter and sort in the URL. Around eight tests.",
+    why:"Every project before this handed you something — a layout to copy, an API that defined your data shape. Here nothing is given. <b>You</b> decide the type, the action union, the route structure, what happens on failure. Deciding those badly and living with it for three weeks is the most educational experience in the plan.",
+    learn:"TypeScript with React. Context + reducer as a state architecture. Persistence. Graceful degradation. Tests that query the way a user does — which forces accessible markup.",
+    crit:["<b>It works:</b> full CRUD, survives a refresh, deployed and openable on your phone.",
+          "<b>It's typed:</b> zero <code>any</code>, zero <code>@ts-ignore</code>, and dispatching a bogus action is a compile error rather than a runtime surprise.",
+          "<b>It's tested:</b> ~8 meaningful tests pass, and deliberately breaking a component gives a failure message that tells you what broke.",
+          "<b>The real signal:</b> somewhere in these four weeks you'll hit a bug you can't google verbatim and diagnose it from your own reasoning plus DevTools. That's the moment you stop being a beginner."] },
+
+  { id:"p5", n:5, name:"Shelf, full-stack", tag:"deployed & tested", role:"Portfolio piece", weeks:[15,16],
+    what:"Your own Express + MongoDB API, deployed. Then Shelf rewired to use it: every operation async with its own loading state, server validation surfaced onto the right form fields, optimistic delete that rolls back, env vars separating dev from prod, MSW mocking the network in tests.",
+    why:"A client-side CRUD app is the most common junior portfolio project in existence and reviewers are numb to it. The differentiator here isn't the stack — MERN is unremarkable — it's the error handling and the write-up. Those suggest judgement, and judgement is what juniors are assessed on.",
+    learn:"HTTP endpoint design. Server-side validation. CORS (which will humiliate you exactly once). Deployment and environment config. Optimistic UI. Mocking at the network boundary.",
+    crit:["<b>It works:</b> deployed frontend talks to deployed backend, data persists across devices, killing the backend gives a sensible error rather than a blank page.",
+          "<b>Others can use it:</b> someone clones both repos, follows your README, and is running in under ten minutes. Test this on a friend.",
+          "<b>It's defensible:</b> a post-mortem naming three things you'd architect differently and why. Worth more in interviews than the code."] }
+];
+
+const WEEKS = [
+{ n:1, p:null, title:"The JavaScript React actually needs, plus toolchain", sub:"Phase 0 — warm-up",
+  read:[L("javascript.info — for any of the six that feel shaky","https://javascript.info")],
+  build:["Destructuring — objects, arrays, nested, with defaults",
+         "Spread &amp; rest — <code>{...obj}</code>, <code>[...arr]</code>. This is the big one",
+         "Array methods — <code>.map() .filter() .find() .reduce()</code>",
+         "Arrow functions, including the <code>() =&gt; ({...})</code> trap",
+         "<code>import</code> / <code>export</code> — named vs default",
+         "Promises, async/await, fetch, try/catch, <code>?.</code> and <code>??</code>",
+         "<b>Immutability drill:</b> write addItem / toggleItem / removeItem / updateItem over an array of <code>{id,text,done}</code> — no push, splice, sort or direct assignment",
+         "Install Node 22 LTS (<code>node -v</code>)",
+         "VS Code + ESLint + Prettier extensions",
+         "React DevTools browser extension",
+         "<code>npm create vite@latest hello-react -- --template react</code>",
+         "GitHub account, push hello-react to it"],
+  done:"The four functions pass your own console checks without mutating the original, and <code>npm run dev</code> shows a Vite React app.",
+  warn:"<code>const</code> doesn't make objects immutable — <code>const arr=[1,2]; arr.push(3)</code> works fine and is exactly the bug React won't warn you about. Immutability is a discipline you enforce." },
+
+{ n:2, p:"p1", title:"Components, JSX, props", sub:"Project 1 — warm-up",
+  read:[L("Quick Start (whole page, ~30 min)","https://react.dev/learn"),
+        L("Your First Component","https://react.dev/learn/your-first-component"),
+        L("Importing and Exporting Components","https://react.dev/learn/importing-and-exporting-components"),
+        L("Writing Markup with JSX","https://react.dev/learn/writing-markup-with-jsx"),
+        L("JavaScript in JSX with Curly Braces","https://react.dev/learn/javascript-in-jsx-with-curly-braces"),
+        L("Passing Props to a Component","https://react.dev/learn/passing-props-to-a-component")],
+  build:["Do the exercises at the bottom of each doc page — they're the best part",
+         "<b>Profile Cards:</b> 6 people, one <code>&lt;ProfileCard&gt;</code> used six times, data in a hardcoded array",
+         "Build a generic <code>&lt;Card&gt;</code> that takes <code>children</code>, make ProfileCard use it"],
+  done:"Six visually distinct cards render from one component, and you can add a seventh person by adding one object to the array and nothing else.",
+  warn:"<code>class</code> → <code>className</code>. Every element closes. One root element (use a <code>&lt;&gt;&lt;/&gt;</code> fragment). Components must start with a capital letter or React renders them as unknown HTML and gives you a confusing empty page." },
+
+{ n:3, p:"p1", title:"Lists, keys, conditionals, purity", sub:"Project 1 — the build",
+  read:[L("Conditional Rendering","https://react.dev/learn/conditional-rendering"),
+        L("Rendering Lists","https://react.dev/learn/rendering-lists"),
+        L("Keeping Components Pure","https://react.dev/learn/keeping-components-pure"),
+        L("Understanding Your UI as a Tree","https://react.dev/learn/understanding-your-ui-as-a-tree")],
+  build:["<b>Stack:</b> everything rendered from one array of ~12 objects",
+         "Grouped into sections with <code>.filter()</code>",
+         "Status badge whose colour and text depend on the data",
+         "Empty state — \"Nothing here yet\" when a group is empty",
+         "Summary line computed with <code>.reduce()</code> — \"8 of 12 done\""],
+  brk:["Use the array index as your <code>key</code>. Reorder the array. Watch badges attach to the wrong rows. Now switch to a stable <code>id</code> and watch it fix itself."],
+  done:"Everything on screen is derived from the array — nothing hardcoded in JSX. Change one object's status and the badge, its group, and the summary all update.",
+  warn:"Index-as-key works fine now and will silently corrupt your UI in Week 7 when items get reordered or deleted. Build the habit now, while it's free." },
+
+{ n:4, p:"p1", title:"Bridge week — the official tutorial", sub:"Project 1 — consolidation",
+  read:[L("Tic-Tac-Toe (the official React tutorial)","https://react.dev/learn/tutorial-tic-tac-toe")],
+  build:["Work through the whole tutorial (budget 3–4 hrs)",
+         "Do the \"time travel\" section — it's where immutability stops being a rule and starts being obviously useful",
+         "Complete at least 2 of the 4 improvement challenges at the end"],
+  mile:["<b>Retrieval test:</b> rebuild the Card/ProfileCard composition from an empty file, no reference, under 20 minutes"],
+  done:"The game works including move history, and you've done two of the four challenges.",
+  warn:"Don't skip ahead if this feels shaky. Redoing it from scratch without looking is only a couple of hours the second time and it's the best value in the whole plan." },
+
+{ n:5, p:"p2", title:"useState, events, and how rendering actually works", sub:"Project 2 — warm-up",
+  read:[L("Responding to Events","https://react.dev/learn/responding-to-events"),
+        L("State: A Component's Memory","https://react.dev/learn/state-a-components-memory"),
+        L("Render and Commit","https://react.dev/learn/render-and-commit"),
+        L("State as a Snapshot — read this twice","https://react.dev/learn/state-as-a-snapshot"),
+        L("Queueing a Series of State Updates","https://react.dev/learn/queueing-a-series-of-state-updates")],
+  build:["<b>Score Keeper:</b> two teams, +1 / +2 / +3 / −1, reset",
+         "Highlight whoever's leading — derived, not stored in its own state",
+         "Track and display the number of lead changes"],
+  brk:["Write the \"+3\" button as three separate <code>setScore(score + 1)</code> calls. It adds 1, not 3. Sit with that for a minute, then fix it with <code>setScore(s =&gt; s + 1)</code>."],
+  done:"Scores update correctly, the leader highlight is derived, and you can explain out loud why three <code>setScore(score+1)</code> calls only add 1.",
+  warn:"State updates aren't immediate — <code>setCount(5); console.log(count)</code> logs the old value. And if you can calculate something from existing state, calculate it during render." },
+
+{ n:6, p:"p2", title:"Controlled inputs and forms", sub:"Project 2 — warm-up",
+  read:[L("Reacting to Input with State","https://react.dev/learn/reacting-to-input-with-state"),
+        L("Choosing the State Structure","https://react.dev/learn/choosing-the-state-structure"),
+        L("Sharing State Between Components","https://react.dev/learn/sharing-state-between-components")],
+  build:["<b>Signup form:</b> name, email, password, confirm, country dropdown, terms checkbox",
+         "Every input controlled (<code>value</code> + <code>onChange</code>)",
+         "Field-level validation with errors under each field",
+         "Errors appear on blur, not on every keystroke",
+         "Submit disabled until the form is valid",
+         "On submit: fake a 1.5s delay → spinner → success message",
+         "A \"simulate server error\" toggle so you handle the failure path too",
+         "Model form status as ONE union variable: <code>'editing' | 'submitting' | 'success' | 'error'</code>"],
+  brk:["Delete the <code>value</code> prop from a controlled input and read the warning React gives you."],
+  done:"You can't submit an invalid form, errors are readable and appear at sensible moments, and both the success and error paths work.",
+  warn:"Never <code>useState</code> a field that's derivable. Use real <code>&lt;label&gt;</code> elements with <code>htmlFor</code> — you'll need them for Week 14's tests." },
+
+{ n:7, p:"p2", title:"Arrays and objects in state, and your first reducer", sub:"Project 2 — the build",
+  read:[L("Updating Objects in State","https://react.dev/learn/updating-objects-in-state"),
+        L("Updating Arrays in State","https://react.dev/learn/updating-arrays-in-state"),
+        L("Preserving and Resetting State","https://react.dev/learn/preserving-and-resetting-state"),
+        L("Extracting State Logic into a Reducer","https://react.dev/learn/extracting-state-logic-into-a-reducer")],
+  build:["<b>Tally:</b> add, toggle complete, edit in place, delete",
+         "Filter by all / active / done",
+         "\"Clear completed\" button and a count of remaining items",
+         "Build it with <code>useState</code> first, using your Week 1 helpers",
+         "Then refactor the whole state layer to <code>useReducer</code> — identical behaviour"],
+  brk:["Do <code>items.push(newItem)</code> then <code>setItems(items)</code>. Nothing renders. This is <i>the</i> React beginner bug — meet it under controlled conditions rather than at 11pm in Week 12."],
+  mile:["<b>Retrieval test:</b> from an empty file, write the four immutable array ops, correct on the first run"],
+  done:"All operations work, editing in place doesn't lose your cursor position, and the reducer version behaves identically to the useState version.",
+  warn:"<code>.sort()</code> and <code>.reverse()</code> mutate in place — copy first. The docs will suggest Immer for nested state; skip it and keep your state flat instead. Flat state is the actual fix." },
+
+{ n:8, p:"p3", title:"useEffect, properly", sub:"Project 3 — drills",
+  read:[L("Synchronizing with Effects","https://react.dev/learn/synchronizing-with-effects"),
+        L("You Might Not Need an Effect — the most valuable page on react.dev, read twice","https://react.dev/learn/you-might-not-need-an-effect"),
+        L("Lifecycle of Reactive Effects","https://react.dev/learn/lifecycle-of-reactive-effects"),
+        L("Removing Effect Dependencies","https://react.dev/learn/removing-effect-dependencies")],
+  build:["Fetch one thing from a public API, handle loading and error states",
+         "A <code>useDocumentTitle(title)</code> custom hook",
+         "A <code>useLocalStorage(key, initial)</code> hook that behaves like useState but persists — you'll reuse this in Week 13",
+         "A window-resize listener with a proper cleanup function"],
+  brk:["Delete the cleanup from the resize listener and watch listeners pile up in DevTools."],
+  done:"All four work, and you can explain what the cleanup function is for and why React runs your effect twice in development.",
+  warn:"An effect with no dependency array runs after every render — add <code>setState</code> inside and you have an infinite loop. Trust the exhaustive-deps lint rule; fix the code rather than silencing it." },
+
+{ n:9, p:"p3", title:"Real data fetching — Pokédex", sub:"Project 3 — the build",
+  read:[L("Reusing Logic with Custom Hooks","https://react.dev/learn/reusing-logic-with-custom-hooks"),
+        L("pokeapi.co — free, no auth, well documented","https://pokeapi.co")],
+  build:["A searchable, paginated list",
+         "Click through to a detail view with stats, types, sprites",
+         "All four states explicitly: loading, error, empty results, success",
+         "Debounce the search input",
+         "Pull fetching logic into a <code>useFetch</code> custom hook"],
+  brk:["<b>The race condition — the centrepiece of this project.</b> Throttle to Slow 3G in DevTools. Type \"pika\" fast. Request A fires, then B. A resolves <i>after</i> B and overwrites the correct results with stale ones. Reproduce it, watch it happen, then fix it with an <code>AbortController</code> in the effect cleanup."],
+  done:"Search works smoothly, all four states render sensibly, and the race condition is fixed and you can demonstrate why.",
+  warn:"<code>fetch</code> doesn't throw on 404 or 500 — check <code>response.ok</code> yourself. You'll see people recommend TanStack Query; they're right for production, but write this by hand once so you know what the library does for you." },
+
+{ n:10, p:"p3", title:"Routing", sub:"Project 3 — the build",
+  read:[L("Picking a Mode — you want declarative","https://reactrouter.com/start/modes"),
+        L("Declarative: Installation","https://reactrouter.com/start/declarative/installation"),
+        L("Declarative: Routing","https://reactrouter.com/start/declarative/routing"),
+        L("Declarative: URL Values","https://reactrouter.com/start/declarative/url-values")],
+  build:["Install <code>react-router</code> — <b>NOT</b> <code>react-router-dom</code>, that package no longer exists",
+         "Routes: <code>/</code>, <code>/pokemon/:name</code>, <code>/about</code>, and a 404 catch-all",
+         "Shared layout with nav, using <code>&lt;Outlet /&gt;</code>",
+         "<code>&lt;NavLink&gt;</code> so the active nav item styles itself",
+         "Search term in the URL via <code>useSearchParams</code> — <code>/?q=pika</code> shareable"],
+  mile:["<b>Retrieval test:</b> write a <code>useFetch</code> hook with cleanup from an empty file, under 30 minutes"],
+  done:"Every view has its own URL, browser back/forward works, and you can send someone a link to a specific Pokémon and to a specific search.",
+  warn:"Most routing tutorials are for v6 or v7 — the concepts carry over but the imports don't. reactrouter.com over blog posts, always." },
+
+{ n:11, p:"p4", title:"TypeScript with React", sub:"Project 4 — setup",
+  read:[L("Using TypeScript — React's own guide","https://react.dev/learn/typescript"),
+        L("React TypeScript Cheatsheet — bookmark it","https://react-typescript-cheatsheet.netlify.app/"),
+        L("TS Handbook: Everyday Types + Narrowing only","https://www.typescriptlang.org/docs/handbook/")],
+  build:["Typing props with an <code>interface</code>",
+         "Union types for state: <code>type Status = 'idle'|'loading'|'success'|'error'</code>",
+         "Typing useState when inference isn't enough: <code>useState&lt;Book[]&gt;([])</code>",
+         "Event types: <code>React.ChangeEvent&lt;HTMLInputElement&gt;</code>",
+         "<code>React.ReactNode</code> for children",
+         "Typing a useReducer action union — where TS starts paying you back",
+         "New project: <code>npm create vite@latest -- --template react-ts</code>",
+         "Port Score Keeper and Tally into it"],
+  done:"Both apps compile with zero <code>any</code> and zero <code>@ts-ignore</code>, and dispatching a bogus action is a compile error.",
+  warn:"You'll want to write <code>any</code> to make an error go away. Every time you do, you've deleted the reason you're using TypeScript. Ask for help on the type instead." },
+
+{ n:12, p:"p4", title:"Shelf — create and read", sub:"Project 4 — the build",
+  read:[L("Passing Data Deeply with Context","https://react.dev/learn/passing-data-deeply-with-context"),
+        L("Scaling Up with Reducer and Context","https://react.dev/learn/scaling-up-with-reducer-and-context")],
+  build:["Routes: <code>/books</code>, <code>/books/new</code>, <code>/books/:id</code>, <code>/books/:id/edit</code>",
+         "Design the <code>Book</code> type yourself: id, title, author, status, rating, notes, dateAdded",
+         "<code>useReducer</code> holding the list, exposed through Context",
+         "A typed <code>useBooks()</code> hook that throws a clear error outside the provider",
+         "Create and Read working end to end"],
+  done:"You can add a book from <code>/books/new</code>, get redirected to its detail page, and see it in the list.",
+  warn:"Context is not a state manager — it's a delivery mechanism. The reducer holds state; Context carries it down. In React 19 render the provider as <code>&lt;BooksContext value={...}&gt;</code>, not <code>.Provider</code>." },
+
+{ n:13, p:"p4", title:"Shelf — update, delete, persist", sub:"Project 4 — the build",
+  build:["Edit an existing book, form pre-populated from the record",
+         "Delete with a confirmation step",
+         "Persist to <code>localStorage</code> — reuse your Week 8 hook",
+         "Filter by status and sort, both in the URL via <code>useSearchParams</code>",
+         "Handle <code>/books/999</code> where the book doesn't exist",
+         "Handle an empty library",
+         "Deploy to Netlify or Vercel ⭐",
+         "Write a proper README — screenshot, how to run, what you'd do differently"],
+  brk:["Put deliberate garbage into localStorage via DevTools. Make the app degrade gracefully instead of white-screening. Wrapping <code>JSON.parse</code> in try/catch is a two-line fix that separates a toy from something you'd show someone."],
+  done:"Full CRUD works, your data survives a page refresh, and it's deployed and openable on your phone. <b>This is your first real portfolio piece.</b>",
+  warn:"localStorage is synchronous and capped at ~5MB. Fine here, wrong for real apps — which is exactly what Weeks 15–16 fix." },
+
+{ n:14, p:"p4", title:"Testing", sub:"Project 4 — finishing it",
+  read:[L("Vitest — getting started","https://vitest.dev/guide/"),
+        L("React Testing Library","https://testing-library.com/docs/react-testing-library/intro/"),
+        L("Guiding Principles — short, and it's the whole philosophy","https://testing-library.com/docs/guiding-principles/")],
+  build:["Install: <code>vitest @vitest/ui jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event</code>",
+         "Set <code>environment: 'jsdom'</code> in your Vitest config",
+         "Test: a book card shows title, author and status",
+         "Test: filling the add form and submitting creates a book",
+         "Test: clicking delete then confirming removes it",
+         "Test: empty form shows errors and creates nothing",
+         "Test: empty library shows the empty state",
+         "Query by role and label — <code>getByRole('button',{name:/add book/i})</code> — never by testid or class",
+         "Use <code>userEvent</code>, not <code>fireEvent</code>"],
+  mile:["<b>Milestone:</b> one bug diagnosed without Google, written up in <code>stuck.md</code> — that's when you stop being a beginner"],
+  done:"<code>npm test</code> passes with ~8 meaningful tests, and deliberately breaking a component makes a test fail with a message that tells you what broke.",
+  warn:"Don't chase coverage percentages. Eight tests on paths that matter beat forty on getters. If a component is hard to test, that's the component's fault." },
+
+{ n:15, p:"p5", title:"The backend", sub:"Project 5 — no React this week",
+  read:[L("Bruno — test the API with no frontend","https://www.usebruno.com")],
+  build:["MongoDB Atlas free tier",
+         "Express + Mongoose, a <code>Book</code> schema matching your frontend type",
+         "<code>GET /api/books</code> and <code>GET /api/books/:id</code>",
+         "<code>POST</code>, <code>PUT /:id</code>, <code>DELETE /:id</code>",
+         "Server-side validation — never trust the client",
+         "Proper status codes: 200, 201, 400, 404, 500",
+         "Secrets in <code>.env</code>, and <code>.env</code> in <code>.gitignore</code> BEFORE your first commit",
+         "CORS configured for your dev server",
+         "Test every endpoint from Bruno or Postman",
+         "Deploy to Render or Railway"],
+  done:"All five endpoints work from your API client, invalid data is rejected with a 400 and a useful message, and the API is deployed.",
+  warn:"MongoDB is fine for learning, but for structured related data like this, Postgres (Supabase or Neon) is the more common 2026 default and shows up more in NL junior listings. Worth a look after this plan — not worth switching mid-stream." },
+
+{ n:16, p:"p5", title:"Wire it together", sub:"Project 5 — the payoff",
+  read:[L("MSW — mock the network in tests","https://mswjs.io")],
+  build:["Point Shelf at your real API instead of localStorage",
+         "Loading states on all four CRUD operations",
+         "Real error handling — network failure, server down, server validation on the right fields",
+         "Optimistic delete: remove from UI immediately, restore if the server rejects it",
+         "Environment variables for the API URL so dev and prod differ",
+         "Swap your Week 14 tests to mock with MSW instead of hitting a real server",
+         "Rewrite the README for the full-stack version"],
+  mile:["<b>Milestone:</b> post-mortem written — three things you'd architect differently and why"],
+  done:"Deployed frontend talks to deployed backend, data persists across devices, and killing the backend produces a sensible error message instead of a blank page. ⭐⭐",
+  warn:"CORS will bite you in production even though it worked locally — your deployed frontend's domain must be in the backend's allowed origins. Budget an hour of confusion; everyone loses it once." },
+
+{ n:17, p:null, title:"Personal site — build it", sub:"The display case",
+  read:[L("Framework mode: Installation","https://reactrouter.com/start/framework/installation"),
+        L("Pre-Rendering","https://reactrouter.com/how-to/pre-rendering"),
+        L("Rendering Strategies","https://reactrouter.com/start/framework/rendering")],
+  build:["Home: who you are, what you're looking for, links",
+         "Projects: your repos from this plan, the good ones written up properly",
+         "About",
+         "Contact form via Formspree — no backend needed",
+         "Responsive, dark mode, real <code>&lt;meta&gt;</code> tags for link previews",
+         "Pre-render every route to static HTML"],
+  done:"It builds to static files, the content pages work with JavaScript disabled, and pasting the URL into a chat app produces a proper preview card.",
+  warn:"Scope creep. You're at the end of an 18-week plan and it's tempting to make this perfect. Ship a plain, fast, well-written three-page site. A blog engine can wait." },
+
+{ n:18, p:null, title:"Deploy, polish, consolidate", sub:"The display case",
+  build:["Deploy to Netlify, Vercel or Cloudflare Pages",
+         "Custom domain if you want one (~€10/yr)",
+         "Lighthouse audit — fix anything below 90",
+         "Accessibility pass: keyboard-only nav, alt text, colour contrast, heading order",
+         "Clean up all repos: READMEs, screenshots, delete dead code",
+         "Write the Shelf post-mortem — the single best interview-prep artefact in the plan"],
+  done:"Your site is live on a domain you control, and every project on it is one click from working code. ⭐⭐⭐",
+  warn:"Juniors are hired on judgement, not syntax. The post-mortem demonstrates judgement — treat it as seriously as the code." }
+];
+
+const REFS = [
+{ title:"The stack, as of August 2026", html:`
+  <table><tr><th>Thing</th><th>Version</th><th>Notes</th></tr>
+  <tr><td>React</td><td>19.2</td><td>Current. react.dev documents this.</td></tr>
+  <tr><td>Node</td><td>22 LTS</td><td>React Router 8 requires 22.22+. Install first.</td></tr>
+  <tr><td>Vite</td><td>7.x</td><td><code>npm create vite@latest</code></td></tr>
+  <tr><td>React Router</td><td>8.3</td><td>Package is <code>react-router</code>. <b>Not</b> <code>react-router-dom</code>.</td></tr>
+  <tr><td>TypeScript</td><td>current</td><td>Via Vite's <code>react-ts</code> template, from Week 11.</td></tr>
+  <tr><td>Vitest + RTL</td><td>current</td><td>Testing, from Week 14.</td></tr>
+  <tr><td>Express + MongoDB</td><td>current</td><td>Backend, Weeks 15–16.</td></tr></table>` },
+
+{ title:"Ground rules — these matter more than the curriculum", html:`
+  <p><b>Split your week into 3 sessions, not 1.</b> Two short (~1.5 hrs) for reading and exercises, one long (~3 hrs) for building. Spaced repetition beats one Saturday marathon.</p>
+  <p><b>Never read more than 45 minutes without writing code.</b> React docs are seductive — you'll feel productive reading them. You aren't.</p>
+  <p><b>Type the code, don't paste it.</b> Especially Weeks 2–7. Muscle memory for JSX and hook shapes is real.</p>
+  <p><b>Every project gets its own repo, pushed to GitHub.</b> In Week 18 you'll want them all; creating them retroactively is miserable.</p>
+  <p><b>Respect the "Done when" line.</b> Hit it, commit, move on — even if the CSS is ugly. Polishing Week 5 for three weeks is how this plan dies.</p>
+  <p><b>Keep a <code>stuck.md</code>.</b> One line per thing that confused you and how it resolved. By Week 12 you'll be answering your own Week 6 questions from it.</p>` },
+
+{ title:"The build → break → read loop", html:`
+  <p>The difference between four months of real learning and four months of typing along is almost entirely in this loop.</p>
+  <p><b>1. Build blind first.</b> Attempt the feature <i>before</i> reading the doc page. You'll do it wrong. That's the point — you now have a specific question, and reading with a question is worth about ten times reading to acquire.</p>
+  <p><b>2. Break it on purpose.</b> The amber items in each week are scripted failures. Don't skip them because the app already works — a concept you've watched fail is a concept you own.</p>
+  <p><b>3. Then read the docs.</b> Now the page answers something you actually wanted to know, in half the time.</p>
+  <p><b>4. Rebuild the core from an empty file.</b> Re-reading your own working code feels productive and teaches almost nothing. Recognition isn't recall.</p>
+  <p><b>The honest self-check:</b> do each retrieval test cold. If you have to peek at your old code, you copied rather than learned. Two hours redoing Project 2 beats four weeks of confusion in Project 4.</p>` },
+
+{ title:"2026 traps — where the internet's advice is now wrong", html:`
+  <p><b><code>react-router-dom</code> no longer exists.</b> React Router 8 (June 2026) removed the package. Install <code>react-router</code>; a few DOM-specific exports come from <code>react-router/dom</code>. Every pre-2026 tutorial gets this wrong.</p>
+  <p><b><code>&lt;Context.Provider&gt;</code> → <code>&lt;Context&gt;</code>.</b> React 19 lets you render the context object directly. The old form works but is deprecated.</p>
+  <p><b>You probably don't need <code>useMemo</code> / <code>useCallback</code>.</b> React Compiler (v1.0, Oct 2025) memoizes automatically. Older tutorials scatter them everywhere as cargo-cult performance advice.</p>
+  <p><b><code>create-react-app</code> is dead.</b> If a tutorial starts with <code>npx create-react-app</code>, close it — everything else in it will be stale too.</p>
+  <p><b><code>useEffectEvent</code> is now stable</b> and imports from <code>react</code> directly. Tutorials calling it experimental are out of date.</p>
+  <p><b>Check the date on everything.</b> React tutorials rot faster than almost any other technology's. Older than 2025? Assume the APIs moved.</p>` },
+
+{ title:"What to deliberately skip", html:`
+  <p>You'll be told you need these. You don't, not yet.</p>
+  <p><b>Redux / Zustand / Jotai</b> — useState + useReducer + Context covers everything here. Learn a state library when you feel the pain it solves.</p>
+  <p><b>Next.js</b> — excellent, and the production default, but it hides how React works behind conventions. Pick it up after Week 18; it'll take about a week from where you'll be.</p>
+  <p><b>Tailwind vs CSS-in-JS vs CSS Modules</b> — pick plain CSS or CSS Modules and stop thinking about it.</p>
+  <p><b>Class components, lifecycle methods</b> — only for maintaining old code.</p>
+  <p><b>Server Components, SSR internals, Suspense for data</b> — advanced, framework-level, irrelevant here.</p>
+  <p><b>GraphQL</b> — REST is what you'll meet in junior roles.</p>` },
+
+{ title:"If you fall behind", html:`
+  <p>You will, somewhere around Week 9 or Week 15. Triage in this order.</p>
+  <p><b>Never skip:</b> Projects 2 and 4 (Weeks 5, 7, 12, 13) and the Week 8 effects drills. State, immutable updates, effects and the CRUD milestone are load-bearing.</p>
+  <p><b>Compressible:</b> Week 4 if Weeks 2–3 went well. Week 11 can spread into Week 12. Week 14 can shrink to four tests.</p>
+  <p><b>Droppable if you must:</b> Project 5, the backend. You'd finish with Projects 1–4 and a site, which is still a real portfolio. Losing it costs you "full-stack" on the CV, so drop it last.</p>
+  <p><b>Never droppable:</b> the retrieval tests. Twenty minutes each, and the only honest signal about whether the last project stuck.</p>
+  <p><b>If you stall for two weeks or more:</b> don't restart from Week 1. Reread <code>stuck.md</code>, rebuild the last project you finished without looking at your old code, and carry on. Restarting from the beginning is how people spend two years never getting past components.</p>` }
+];
+
+/* ============================== STATE ============================== */
+const KEY = "react18wk.v1";
+let S = { done:{}, start:"", open:{}, hideDone:false };
+let storageOK = true;
+try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }
+catch(e){ storageOK = false; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ storageOK=false; } }
+
+/* item id helpers */
+const IDS = {};
+function itemsOf(w){
+  const out=[];
+  (w.read||[]).forEach((r,i)=>out.push({id:`w${w.n}-r${i}`,kind:"read",label:`<a href="${r.u}" target="_blank" rel="noopener">${r.t}</a>`}));
+  (w.build||[]).forEach((b,i)=>out.push({id:`w${w.n}-b${i}`,kind:"build",label:b}));
+  (w.brk||[]).forEach((b,i)=>out.push({id:`w${w.n}-k${i}`,kind:"brk",label:b}));
+  (w.mile||[]).forEach((b,i)=>out.push({id:`w${w.n}-m${i}`,kind:"mile",label:b}));
+  return out;
+}
+WEEKS.forEach(w=>{ IDS[w.n]=itemsOf(w); });
+const ALL_IDS = WEEKS.flatMap(w=>IDS[w.n].map(i=>i.id));
+const isDone = id => !!S.done[id];
+const weekDone = n => IDS[n].length>0 && IDS[n].every(i=>isDone(i.id));
+const weekCount = n => IDS[n].filter(i=>isDone(i.id)).length;
+const projItems = p => WEEKS.filter(w=>w.p===p).flatMap(w=>IDS[w.n].map(i=>i.id));
+const projDone = p => { const a=projItems(p); return a.length>0 && a.every(isDone); };
+
+/* ============================== RENDER ============================== */
+const $ = s=>document.querySelector(s);
+const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;};
+
+function renderRail(){
+  const r = $("#rail"); r.innerHTML="";
+  let firstIncomplete = PROJECTS.find(p=>!projDone(p.id));
+  PROJECTS.forEach(p=>{
+    const a=projItems(p.id), d=a.filter(isDone).length;
+    const pc = a.length? Math.round(d/a.length*100):0;
+    const c = el("div","pcard"+(projDone(p.id)?" done":"")+(firstIncomplete&&firstIncomplete.id===p.id?" active":""));
+    c.innerHTML = `<div class="chk">✅</div>
+      <div class="n">Project ${p.n}</div>
+      <h3>${p.name}</h3>
+      <div class="tag">${p.tag} · ${p.role}</div>
+      <div class="wk">Weeks ${p.weeks[0]}–${p.weeks[p.weeks.length-1]} · ${d}/${a.length} tasks</div>
+      <div class="pbar"><i style="width:${pc}%"></i></div>`;
+    c.onclick=()=>{ const t=document.getElementById("pd-"+p.id); if(t){ t.scrollIntoView({behavior:"smooth",block:"start"}); } };
+    r.appendChild(c);
+  });
+}
+
+function weekEl(w){
+  const d = el("div","week"+(weekDone(w.n)?" done":"")+(S.open["w"+w.n]?" open":""));
+  d.dataset.n = w.n;
+  const items = IDS[w.n];
+  const head = el("div","whead");
+  head.innerHTML = `<div class="wnum">${w.n}</div>
+    <div class="wtitle"><b>${w.title}</b><span>${w.sub||""}</span></div>
+    <div class="wcount">${weekCount(w.n)}/${items.length}</div>
+    <div class="caret">▸</div>`;
+  head.onclick = ()=>{ d.classList.toggle("open"); S.open["w"+w.n]=d.classList.contains("open"); save(); };
+  d.appendChild(head);
+
+  const body = el("div","wbody");
+  const groups = [["read","Read"],["build","Build"],["brk","Break it on purpose"],["mile","Milestone"]];
+  groups.forEach(([k,label])=>{
+    const list = items.filter(i=>i.kind===k);
+    if(!list.length) return;
+    const g = el("div","grp "+k);
+    g.appendChild(el("div","gt",label));
+    list.forEach(it=>{
+      const row = el("div","item"+(k==="mile"?" milestone":""));
+      const cb = el("input"); cb.type="checkbox"; cb.id=it.id; cb.checked=isDone(it.id);
+      cb.onchange = ()=>toggle(it.id, cb.checked);
+      const lb = el("label",null,it.label); lb.setAttribute("for", it.id);
+      row.appendChild(cb); row.appendChild(lb); g.appendChild(row);
+    });
+    body.appendChild(g);
+  });
+  if(w.done) body.appendChild(el("div","note done","<b>Done when</b>"+w.done));
+  if(w.warn) body.appendChild(el("div","note warn","<b>Watch out for</b>"+w.warn));
+  d.appendChild(body);
+  return d;
+}
+
+function renderPlan(){
+  const root = $("#plan"); root.innerHTML="";
+  const emitted = new Set();
+  PROJECTS.forEach(p=>{
+    root.appendChild(el("h2","sec",`Project ${p.n} — ${p.name} · Weeks ${p.weeks[0]}–${p.weeks[p.weeks.length-1]} · ${p.role}`));
+    const pd = el("div","pdetail"); pd.id="pd-"+p.id;
+    pd.innerHTML = `<h3>${p.name}</h3><div class="role">${p.role}</div>
+      <p><b>What you build.</b> ${p.what}</p>
+      <p><b>Why it's here.</b> ${p.why}</p>
+      <p><b>What you'll learn.</b> ${p.learn}</p>
+      <div class="crit"><div class="gt" style="font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--gr);font-weight:700;margin-bottom:6px">Success criteria</div>
+      ${p.crit.map(c=>`<p style="margin:6px 0">• ${c}</p>`).join("")}</div>`;
+    root.appendChild(pd);
+    p.weeks.forEach(n=>{ emitted.add(n); root.appendChild(weekEl(WEEKS.find(w=>w.n===n))); });
+  });
+  const rest = WEEKS.filter(w=>!emitted.has(w.n));
+  if(rest.length){
+    root.appendChild(el("h2","sec","Warm-up &amp; display case"));
+    rest.sort((a,b)=>a.n-b.n).forEach(w=>root.appendChild(weekEl(w)));
+  }
+  applyHide();
+}
+
+function renderRefs(){
+  const r=$("#refs"); r.innerHTML="";
+  REFS.forEach(x=>{
+    const d=el("details","ref");
+    d.innerHTML=`<summary>${x.title}</summary><div class="refbody">${x.html}</div>`;
+    r.appendChild(d);
+  });
+}
+
+function renderStats(){
+  const total = ALL_IDS.length, done = ALL_IDS.filter(isDone).length;
+  const pct = total? done/total : 0;
+  $("#arc").style.strokeDashoffset = String(351.86*(1-pct));
+  $("#pctN").textContent = Math.round(pct*100)+"%";
+  $("#sTasks").textContent = done+"/"+total;
+  $("#sWeeks").textContent = WEEKS.filter(w=>weekDone(w.n)).length+"/18";
+  $("#sProj").textContent = PROJECTS.filter(p=>projDone(p.id)).length+"/5";
+
+  const nextW = WEEKS.find(w=>!weekDone(w.n));
+  if(!nextW){
+    $("#focusTxt").innerHTML = "🎉 <b>Everything is checked off.</b> Eighteen weeks, five projects, one deployed portfolio. Go update your CV.";
+    $("#sEta").textContent = "Done";
+  } else {
+    const p = nextW.p ? PROJECTS.find(x=>x.id===nextW.p) : null;
+    $("#focusTxt").innerHTML = `<b>Week ${nextW.n} — ${nextW.title}</b>`
+      + (p? ` · building <b>${p.name}</b>` : "")
+      + ` · ${weekCount(nextW.n)}/${IDS[nextW.n].length} done`;
+    if(S.start){
+      const remaining = 18 - (nextW.n - 1);
+      const d = new Date(S.start+"T12:00:00");
+      if(!isNaN(d)){
+        d.setDate(d.getDate() + Math.round((nextW.n-1+remaining)*7));
+        $("#sEta").textContent = d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"2-digit"});
+      }
+    } else $("#sEta").textContent = "—";
+  }
+}
+
+function refreshWeek(n){
+  const d = document.querySelector(`.week[data-n="${n}"]`);
+  if(!d) return;
+  d.classList.toggle("done", weekDone(n));
+  d.querySelector(".wcount").textContent = weekCount(n)+"/"+IDS[n].length;
+}
+
+/* ============================== EVENTS ============================== */
+function toggle(id, on){
+  const wasProj = {}; PROJECTS.forEach(p=>wasProj[p.id]=projDone(p.id));
+  const n = parseInt(id.slice(1),10);
+  const wasWeek = weekDone(n);
+  if(on) S.done[id]=1; else delete S.done[id];
+  save();
+  refreshWeek(n); renderRail(); renderStats(); applyHide();
+  PROJECTS.forEach(p=>{
+    if(!wasProj[p.id] && projDone(p.id)) celebrate(`Project ${p.n} complete — ${p.name} 🎉`);
+  });
+  if(!wasWeek && weekDone(n) && !PROJECTS.some(p=>!wasProj[p.id] && projDone(p.id)))
+    celebrate(`Week ${n} done ✅`);
+}
+
+function applyHide(){
+  document.querySelectorAll(".week").forEach(d=>{
+    const n = +d.dataset.n;
+    d.classList.toggle("hide", S.hideDone && weekDone(n));
+  });
+  $("#bHide").classList.toggle("on", S.hideDone);
+}
+
+$("#bHide").onclick = ()=>{ S.hideDone=!S.hideDone; save(); applyHide(); };
+$("#bOpen").onclick = ()=>{ document.querySelectorAll(".week").forEach(d=>{d.classList.add("open");S.open["w"+d.dataset.n]=true}); save(); };
+$("#bClose").onclick = ()=>{ document.querySelectorAll(".week").forEach(d=>{d.classList.remove("open");S.open["w"+d.dataset.n]=false}); save(); };
+$("#startDate").onchange = e=>{ S.start=e.target.value; save(); renderStats(); };
+$("#bReset").onclick = ()=>{ if(confirm("Clear all progress? This can't be undone — export first if you want a backup.")){ S={done:{},start:S.start,open:{},hideDone:false}; save(); renderAll(); } };
+$("#bExport").onclick = ()=>{
+  const blob = new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="react-plan-progress.json"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast("Progress exported");
+};
+$("#bImport").onclick = ()=>{
+  const i=document.createElement("input"); i.type="file"; i.accept="application/json,.json";
+  i.onchange=()=>{ const f=i.files[0]; if(!f)return; const r=new FileReader();
+    r.onload=()=>{ try{ S=Object.assign({done:{},start:"",open:{},hideDone:false},JSON.parse(r.result)); save(); renderAll(); toast("Progress imported"); }
+                   catch(e){ alert("That file didn't parse as valid progress JSON."); } };
+    r.readAsText(f); };
+  i.click();
+};
+
+/* ============================== FX ============================== */
+let toastT;
+function toast(msg){
+  const t=$("#toast"); t.innerHTML=msg; t.classList.add("show");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),3200);
+}
+function celebrate(msg){ toast(msg); confetti(); }
+
+const cv=$("#cf");
+let cx=null; try{ cx = cv.getContext("2d"); }catch(e){}
+let parts=[], raf=null;
+function fit(){ if(cv){ cv.width=innerWidth; cv.height=innerHeight; } }
+addEventListener("resize",fit); fit();
+function confetti(){
+  if(!cx) return;              // decorative only — never let it break the tracker
+  const cols=["#61dafb","#a78bfa","#4ade80","#fbbf24","#fb7185","#e6edf7"];
+  for(let i=0;i<130;i++) parts.push({
+    x:innerWidth/2+(Math.random()-.5)*220, y:innerHeight*0.32,
+    vx:(Math.random()-.5)*11, vy:Math.random()*-13-4,
+    s:Math.random()*6+3, c:cols[i%cols.length],
+    r:Math.random()*Math.PI, vr:(Math.random()-.5)*.28, life:0
+  });
+  if(!raf) raf=requestAnimationFrame(tick);
+}
+function tick(){
+  if(!cx){ raf=null; parts=[]; return; }
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts = parts.filter(p=>p.life<170 && p.y<cv.height+40);
+  parts.forEach(p=>{
+    p.life++; p.vy+=0.42; p.vx*=0.995; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr;
+    cx.save(); cx.translate(p.x,p.y); cx.rotate(p.r);
+    cx.globalAlpha = Math.max(0, 1-p.life/170);
+    cx.fillStyle=p.c; cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.62); cx.restore();
+  });
+  if(parts.length) raf=requestAnimationFrame(tick); else { raf=null; cx.clearRect(0,0,cv.width,cv.height); }
+}
+
+/* ============================== BOOT ============================== */
+function renderAll(){
+  renderRail(); renderPlan(); renderStats();
+  $("#startDate").value = S.start||"";
+  applyHide();
+}
+renderRefs();
+renderAll();
+if(!storageOK){
+  toast("⚠️ This browser is blocking local storage — progress won't be saved. Use Export to keep a copy.");
+}
+</script>
+</body>
+</html>
